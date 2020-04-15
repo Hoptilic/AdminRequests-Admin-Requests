@@ -35,17 +35,25 @@ namespace AdminRequests.Commands
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            if (caller != null)
+            UnturnedPlayer player = (UnturnedPlayer)caller;
+
+            string message = string.Join(" ", command);
+
+            if (command.Length == 0)
             {
-                UnturnedPlayer player = (UnturnedPlayer)caller;
-                if (command.Length == 0)
+                UnturnedChat.Say(caller, AdminRequests.Instance.Translate("proper_usage"), UnturnedChat.GetColorFromName("Cyan", Color.cyan));
+            }
+            else
+            {
+                foreach (UnturnedPlayer admin in AdminRequests.Instance.Players())
                 {
-                    UnturnedChat.Say(caller, AdminRequests.Instance.Translate("proper_usage"), UnturnedChat.GetColorFromName("Cyan", Color.cyan));
+                    if (admin.IsAdmin || admin.HasPermission("arequest.receive"))
+                    {
+                        UnturnedChat.Say(admin, AdminRequests.Instance.Translate("request_message") + player.CharacterName + " " + "is requesting an admin with message: " + message, UnturnedChat.GetColorFromName("Cyan", Color.cyan));
+                    };
                 }
-                else
-                {
-                    UnturnedChat.Say(AdminRequests.Instance.Translate("request_message", player.DisplayName, command[0]), UnturnedChat.GetColorFromName("Cyan", Color.cyan));
-                }
+                UnturnedChat.Say(player, "Your message was sent to the admins successfully. Please wait for the admins to respond.", UnturnedChat.GetColorFromName("Cyan", Color.cyan));
+                
             }
         }
 
